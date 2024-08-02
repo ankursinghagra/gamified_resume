@@ -1,0 +1,47 @@
+{"frames": {
+
+"Water_0.png":
+{
+	"frame": {"x":1,"y":1,"w":80,"h":80},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":80,"h":80},
+	"sourceSize": {"w":80,"h":80}
+},
+"Water_1.png":
+{
+	"frame": {"x":83,"y":1,"w":80,"h":80},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":80,"h":80},
+	"sourceSize": {"w":80,"h":80}
+},
+"Water_2.png":
+{
+	"frame": {"x":165,"y":1,"w":80,"h":80},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":80,"h":80},
+	"sourceSize": {"w":80,"h":80}
+},
+"Water_3.png":
+{
+	"frame": {"x":247,"y":1,"w":80,"h":80},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":80,"h":80},
+	"sourceSize": {"w":80,"h":80}
+}},
+"animations": {
+	"Water": ["Water_0.png","Water_1.png","Water_2.png","Water_3.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "Water_Anim.png",
+	"format": "RGBA8888",
+	"size": {"w":328,"h":82},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:ae4302a263cab2a7c3f3432d687cc706:7cf73ea8ced745edcc55f32794ed202c:2a8eac775aab6979d2ea3af5ddb66552$"
+}
+}
