@@ -5,30 +5,64 @@
         *{margin: 0;padding: 0;}
         body{
         	background: black;
+            overflow: hidden;
         }
         canvas {
 		    padding: 0;
 		    margin: 0;
 
 		    width: 100vw; 
-		    max-width: 100%; /* ensures that it doesn't overflow */
+		    max-width: 100%;
 		    height: auto;
-		    max-height: 100%; /* ensures that it doesn't overflow */
+		    max-height: 100%;
 
-		    user-select: none; /* removes accidental selection */
+		    user-select: none; 
 		}
     </style>
   </head>
   <body>
-    <script src="https://pixijs.download/release/pixi.js"></script>
-    <!-- <script src="assets/js/viewport.min.js"></script> -->
+    <!-- <script src="https://pixijs.download/release/pixi.js"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.2.6/pixi.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
+    <script src="assets/js/viewport.min.js"></script>
     <script type="module">
+        const isViewPort = true;
+        const version = 7;
         //import { Assets } from 'pixi.js';
 
-        const app = new PIXI.Application();
-        await app.init({ height: window.innerHeight, width: window.innerWidth, resizeTo: window });
-        globalThis.__PIXI_APP__ = app;
-        document.body.appendChild(app.canvas);
+        const WORLD_WIDTH = 1500
+        const WORLD_HEIGHT = 1500
+
+        
+        if(version == 7){
+            var app = new PIXI.Application({ height: window.innerHeight, width: window.innerWidth, resizeTo: window });
+            globalThis.__PIXI_APP__ = app;
+            document.body.appendChild(app.view);
+        }else{
+            var app = new PIXI.Application();
+            if(!isViewPort){
+                await app.init({ height: window.innerHeight, width: window.innerWidth, resizeTo: window });
+            }else{
+                await app.init({ height: window.innerHeight, width: window.innerWidth, resizeTo: window });
+            }
+            globalThis.__PIXI_APP__ = app;
+            document.body.appendChild(app.canvas);
+        }
+        
+
+        if(isViewPort){
+            
+            var viewport = new PIXI.Viewport({
+                screenWidth: window.innerWidth,
+                screenHeight: window.innerHeight,
+                worldWidth: WORLD_WIDTH,
+                worldHeight: WORLD_HEIGHT,
+                events: app.renderer.events,
+                stopPropagation: true
+                //interaction: app.renderer.__plugins.interaction // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
+            });
+            
+        }
 
         //loading
         let Hills_array = [];
@@ -44,47 +78,54 @@
         const resources = await PIXI.Assets.loadBundle('resources', ()=>{
             console.log("assets loaded");
         });
-
-        //const animated_sprites = {};
-        /* const sprite = PIXI.Sprite.from(resources.Water_Anim_img);
-        sprite.width = 512;
-        sprite.height = 512;
-        // Adds a sprite as a child to this container. As a result, the sprite will be rendered whenever the container
-        // is rendered. */
         
-        //home_container.addChild(sprite);
         var home_container = new PIXI.Container();
         home_container.label = "Home Container";
+        home_container.interactive = true;
 
         home_container.addChild( await add_Water_bg());
         home_container.addChild( await add_ground());
 
-
-        app.stage.addChild(home_container);
-        app.stage.scale.set(0.2,0.2)
+        if(isViewPort){
+            viewport.addChild(home_container);
+            app.stage.addChild(viewport)
+            viewport.drag()
+            //viewport.pinch()
+            viewport.wheel()
+            //viewport.decelerate(); 
+            //viewport.fit(false, window.innerWidth, window.innerHeight)
+            //viewport.fit();
+            //viewport.moveCenter(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)
+            //viewport.clamp({direction: "all"});
+            viewport.on("drag-end", function(){
+                console.log(this.getVisibleBounds());
+                if(parseFloat(this.getVisibleBounds().x) < 0 || parseFloat(this.getVisibleBounds().y) < 0){
+                    viewport.moveCenter(window.innerWidth/2,window.innerHeight/2)
+                }
+            });
+            viewport.on("zoomed", function(e){
+              if(this.lastViewport.scaleX < 1 || this.lastViewport.scaleY < 1){
+                let self = this;
+                this.ensureVisible(0,0);
+                setTimeout(() => {
+                  self.fit(false, window.innerWidth, window.innerHeight);
+                }, 100);
+              }
+            });
+        }else{
+            app.stage.addChild(home_container);
+            //app.stage.scale.set(0.4,0.4)
+        }
 
         // adds the ocean background
         async function add_Water_bg(){
             var bg_water = new PIXI.Container();
             bg_water.label = "Water";
-
-            const water_sheet = new PIXI.Spritesheet(resources.Water_Anim_img, resources.Water_Anim_json.data);
-            await water_sheet.parse();
-            let water_texture_arr = [];
-            for (let i = 0; i < 4; i++) {
-                let texture = new PIXI.Texture(water_sheet.textures["Water_"+i+".png"]);
-                water_texture_arr.push(texture);
-            }
-            const water_animation =  new PIXI.AnimatedSprite(water_texture_arr);
-            water_animation.animationSpeed = 1/10;                  // 10 fps
-            water_animation.position.set(0, 0); // almost bottom-left corner of the canvas
-            water_animation.loop = true;
-            water_animation.play();
-
+ 
             for (let i = 0; i < 30; i++) {
                 for (let j = 0; j < 23; j++) {
                     if( i>6 && i<20 && j>6 && j<18) continue;
-                    let anim = new PIXI.AnimatedSprite(water_texture_arr);
+                    let anim = new PIXI.AnimatedSprite(resources.Water_Anim_json.animations.Water);
                     anim.position.set(i*80,j*80);
                     anim.animationSpeed = 1/10;   
                     anim.loop = true;
@@ -101,7 +142,9 @@
             bg_land.label = "Land";
 
             let land_pattern_arr = [
-                ["_","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
+                ["_","_","_","_","_","_","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","_","_","_"],
+                ["_","_","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","_","_"],
+                ["_","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","_"],
                 ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
                 ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
                 ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
@@ -126,12 +169,10 @@
                 ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
                 ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
                 ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
-                ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
-                ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
-                ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
-                ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
-                ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
-                ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11"],
+                ["11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","_"],
+                ["_","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","_","_"],
+                ["_","_","_","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","_","_","_","_"],
+                ["_","_","_","_","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","11","_","_","_","_","_","_","_","_","_","_","_","_","_","_"],
             ];
 
             let start = {x:300,y:300};
