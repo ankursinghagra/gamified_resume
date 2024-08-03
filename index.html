@@ -80,6 +80,7 @@
             {alias: 'Rock7_water_shadow5', src: 'assets/backgrounds/stones/Rock7_water_shadow5.png'},
             {alias: 'Tree_1', src: 'assets/backgrounds/Trees/32.png'},
             {alias: 'Tree_2', src: 'assets/backgrounds/Trees/34.png'},
+            {alias: 'heart', src: 'assets/backgrounds/heart/heart.png'},
         ].concat(Hills_array));
 
         const resources = await PIXI.Assets.loadBundle('resources', ()=>{
@@ -91,6 +92,7 @@
 
         home_container.addChild( await add_Water_bg());
         home_container.addChild( await add_ground());
+        
 
         if(isViewPort){
             viewport.addChild(home_container);
@@ -109,6 +111,8 @@
             app.stage.addChild(home_container);
             //app.stage.scale.set(0.4,0.4)
         }
+
+        app.stage.addChild( await add_frame());
 
         // adds the ocean background
         async function add_Water_bg(){
@@ -207,6 +211,16 @@
             return bg_land;
         }
 
+        async function add_frame(){
+            var frame_container = new PIXI.Container();
+            frame_container.label = "Frame";
+
+            frame_container.addChild(addSprite(resources['heart'], 10,10,2,2));
+            frame_container.addChild(addSprite(resources['heart'], 60,10,2,2));
+            frame_container.addChild(addSprite(resources['heart'], 110,10,2,2));
+
+            return frame_container;
+        }
         function addSprite(resource, x,y,sx,sy){
             let sp = new PIXI.Sprite(resource);
             sp.position.set(x,y);
