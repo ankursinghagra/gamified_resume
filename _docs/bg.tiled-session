@@ -1,0 +1,90 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Village_Layer.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "exportAsImage.useCurrentScale": true,
+    "fileStates": {
+        "Grass_Layer.tmx": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1388,
+                "y": 698
+            }
+        },
+        "Hills.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "Land_Layer.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 772,
+                "y": 739.5
+            }
+        },
+        "TilesetVillageAbandoned.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "TreesDecorations.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "Village_Layer.tmx": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2240,
+                "y": 1590
+            }
+        },
+        "untitled.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 471.99999999999994,
+                "y": 883.3333333333333
+            }
+        }
+    },
+    "last.imagePath": "D:/XAMPP82/htdocs/frameworks/pixi/002/assets/backgrounds",
+    "map.height": 40,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 80,
+    "map.tileWidth": 80,
+    "map.width": 60,
+    "openFiles": [
+        "Hills.tsx",
+        "TreesDecorations.tsx",
+        "Land_Layer.tmx",
+        "Grass_Layer.tmx",
+        "TilesetVillageAbandoned.tsx",
+        "Village_Layer.tmx"
+    ],
+    "project": "bg.tiled-project",
+    "recentFiles": [
+        "Hills.tsx",
+        "TreesDecorations.tsx",
+        "Land_Layer.tmx",
+        "Grass_Layer.tmx",
+        "TilesetVillageAbandoned.tsx",
+        "Village_Layer.tmx",
+        "untitled.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 80,
+        "width": 80
+    },
+    "tileset.type": 0
+}
