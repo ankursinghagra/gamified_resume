@@ -1,362 +1,468 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <style>
-        *{margin: 0;padding: 0;}
-        body{
-        	background: black;
-            overflow: hidden;
-        }
-        canvas {
-		    padding: 0;
-		    margin: 0;
+	<head>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			body {
+				background: black;
+				overflow: hidden;
+			}
+			canvas {
+				padding: 0;
+				margin: 0;
 
-		    width: 100vw; 
-		    max-width: 100%;
-		    height: auto;
-		    max-height: 100%;
+				width: 100vw;
+				max-width: 100%;
+				height: auto;
+				max-height: 100%;
 
-		    user-select: none; 
-		}
-    </style>
-  </head>
-  <body>
-    <!-- <script src="https://pixijs.download/release/pixi.js"></script> -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.2.6/pixi.min.js"></script> -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
-    <script src="assets/js/viewport.min.js"></script>
-    <script type="module">
-        const isViewPort = true;
-        const version = 7;
-        //import { Assets } from 'pixi.js';
+				user-select: none;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- <script src="https://pixijs.download/release/pixi.js"></script> -->
+		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.2.6/pixi.min.js"></script> -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
+		<script src="assets/js/viewport.min.js"></script>
+		<script type="module">
+			const isViewPort = true;
+			const version = 7;
+			//import { Assets } from 'pixi.js';
 
-        const WORLD_WIDTH = 2400;
-        const WORLD_HEIGHT = 1840;
+			const WORLD_WIDTH = 2400;
+			const WORLD_HEIGHT = 1840;
 
-        let current_direction = "left";
-        
-        if(version == 7){
-            var app = new PIXI.Application({ height: window.innerHeight, width: window.innerWidth, resizeTo: window });
-            globalThis.__PIXI_APP__ = app;
-            document.body.appendChild(app.view);
-        }else{
-            var app = new PIXI.Application();
-            if(!isViewPort){
-                await app.init({ height: window.innerHeight, width: window.innerWidth, resizeTo: window });
-            }else{
-                await app.init({ height: window.innerHeight, width: window.innerWidth, resizeTo: window });
-            }
-            globalThis.__PIXI_APP__ = app;
-            document.body.appendChild(app.canvas);
-        }
+			let current_direction = "left";
 
-        //show loading screen
-        var loading_container = new PIXI.Container();
-        loading_container.label = "Loading";
-        await PIXI.Assets.load({alias: '04B_30__', src:'assets/fonts/04B_30__.woff'}, ()=>{
-            var loading_text = new PIXI.Text('Loading',{
-                fontSize: 24,
-                fontFamily:'04B_30__',
-                fill: 0xff1010,
-                align: 'center',
-            });
-            loading_text.position.set(window.innerWidth / 2,  window.innerHeight / 2);
-            loading_container.addChild(loading_text);
-            app.stage.addChild(loading_container);
-        });
-        
-        if(isViewPort){
-            
-            var viewport = new PIXI.Viewport({
-                screenWidth: window.innerWidth,
-                screenHeight: window.innerHeight,
-                worldWidth: WORLD_WIDTH,
-                worldHeight: WORLD_HEIGHT,
-                events: app.renderer.events,
-                stopPropagation: true
-                //interaction: app.renderer.__plugins.interaction // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
-            });
-            
-        }
+			if (version == 7) {
+				var app = new PIXI.Application({
+					height: window.innerHeight,
+					width: window.innerWidth,
+					resizeTo: window,
+				});
+				globalThis.__PIXI_APP__ = app;
+				document.body.appendChild(app.view);
+			} else {
+				var app = new PIXI.Application();
+				if (!isViewPort) {
+					await app.init({
+						height: window.innerHeight,
+						width: window.innerWidth,
+						resizeTo: window,
+					});
+				} else {
+					await app.init({
+						height: window.innerHeight,
+						width: window.innerWidth,
+						resizeTo: window,
+					});
+				}
+				globalThis.__PIXI_APP__ = app;
+				document.body.appendChild(app.canvas);
+			}
 
-        //loading
-        let Hills_array = [];
-        // for (let i = 0; i < 67; i++) {
-        //     Hills_array.push({alias: 'hills_'+i, src: 'assets/backgrounds/Hills/Hills_'+i+'.png'});
-        // }
+			//show loading screen
+			var loading_container = new PIXI.Container();
+			loading_container.label = "Loading";
+			await PIXI.Assets.load(
+				{ alias: "04B_30__", src: "assets/fonts/04B_30__.woff" },
+				() => {
+					var loading_text = new PIXI.Text("Loading", {
+						fontSize: 24,
+						fontFamily: "04B_30__",
+						fill: 0xff1010,
+						align: "center",
+					});
+					loading_text.position.set(
+						window.innerWidth / 2,
+						window.innerHeight / 2
+					);
+					loading_container.addChild(loading_text);
+					app.stage.addChild(loading_container);
+				}
+			);
 
-        let turning_rects = {
-            "NW":{x:230,y:240,h:100,w:150},
-            "NE":{x:1860,y:240,h:240,w:250},
-            "SW":{x:1900,y:1100,h:180,w:220},
-            "SE":{x:230,y:1160,h:130,w:150},
-        };
+			if (isViewPort) {
+				var viewport = new PIXI.Viewport({
+					screenWidth: window.innerWidth,
+					screenHeight: window.innerHeight,
+					worldWidth: WORLD_WIDTH,
+					worldHeight: WORLD_HEIGHT,
+					events: app.renderer.events,
+					stopPropagation: true,
+					//interaction: app.renderer.__plugins.interaction // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
+				});
+			}
 
-        PIXI.Assets.addBundle('resources', [
-            {alias: 'Land_Layer', src: 'assets/backgrounds/Land_Layer.png'},
-            {alias: 'Grass_Layer', src: 'assets/backgrounds/Grass_Layer.png'},
-            {alias: 'Village_Layer', src: 'assets/backgrounds/Village_Layer.png'},
-            {alias: 'Water_Anim_json', src: 'assets/backgrounds/Anim/Water_Anim.json'},
-            {alias: 'Water_Anim_img', src: 'assets/backgrounds/Anim/Water_Anim.png'},
-            {alias: 'Player_Anim_json', src: 'assets/actor/player/Player_Anim.json'},
-            {alias: 'Player_Anim_img', src: 'assets/actor/player/Player_Anim.png'},
-            {alias: 'Rock7_water_shadow1', src: 'assets/backgrounds/stones/Rock7_water_shadow1.png'},
-            {alias: 'Rock7_water_shadow2', src: 'assets/backgrounds/stones/Rock7_water_shadow2.png'},
-            {alias: 'Rock7_water_shadow3', src: 'assets/backgrounds/stones/Rock7_water_shadow3.png'},
-            {alias: 'Rock7_water_shadow4', src: 'assets/backgrounds/stones/Rock7_water_shadow4.png'},
-            {alias: 'Rock7_water_shadow5', src: 'assets/backgrounds/stones/Rock7_water_shadow5.png'},
-            {alias: 'Tree_1', src: 'assets/backgrounds/Trees/32.png'},
-            {alias: 'Tree_2', src: 'assets/backgrounds/Trees/34.png'},
-            {alias: 'heart', src: 'assets/backgrounds/heart/heart.png'},
-        ].concat(Hills_array));
+			//loading
+			let Hills_array = [];
+			// for (let i = 0; i < 67; i++) {
+			//     Hills_array.push({alias: 'hills_'+i, src: 'assets/backgrounds/Hills/Hills_'+i+'.png'});
+			// }
 
-        const resources = await PIXI.Assets.loadBundle('resources', ()=>{
-            console.log("assets loaded");
-        });
-        
-        var home_container = new PIXI.Container();
-        home_container.label = "Home Container";
+			let turning_rects = {
+				NW: { x: 230, y: 240, h: 100, w: 150 },
+				NE: { x: 1860, y: 240, h: 240, w: 250 },
+				SW: { x: 1900, y: 1100, h: 180, w: 220 },
+				SE: { x: 230, y: 1160, h: 130, w: 150 },
+			};
 
-        home_container.addChild( await add_Water_bg());
-        home_container.addChild( await add_ground());
-        home_container.addChild( await add_player());
-        
+			PIXI.Assets.addBundle(
+				"resources",
+				[
+					{ alias: "Land_Layer", src: "assets/backgrounds/Land_Layer.png" },
+					{ alias: "Grass_Layer", src: "assets/backgrounds/Grass_Layer.png" },
+					{
+						alias: "Village_Layer",
+						src: "assets/backgrounds/Village_Layer.png",
+					},
+					{
+						alias: "Water_Anim_json",
+						src: "assets/backgrounds/Anim/Water_Anim.json",
+					},
+					{
+						alias: "Water_Anim_img",
+						src: "assets/backgrounds/Anim/Water_Anim.png",
+					},
+					{
+						alias: "Player_Anim_json",
+						src: "assets/actor/player/Player_Anim.json",
+					},
+					{
+						alias: "Player_Anim_img",
+						src: "assets/actor/player/Player_Anim.png",
+					},
+					{
+						alias: "Rock7_water_shadow1",
+						src: "assets/backgrounds/stones/Rock7_water_shadow1.png",
+					},
+					{
+						alias: "Rock7_water_shadow2",
+						src: "assets/backgrounds/stones/Rock7_water_shadow2.png",
+					},
+					{
+						alias: "Rock7_water_shadow3",
+						src: "assets/backgrounds/stones/Rock7_water_shadow3.png",
+					},
+					{
+						alias: "Rock7_water_shadow4",
+						src: "assets/backgrounds/stones/Rock7_water_shadow4.png",
+					},
+					{
+						alias: "Rock7_water_shadow5",
+						src: "assets/backgrounds/stones/Rock7_water_shadow5.png",
+					},
+					{ alias: "Tree_1", src: "assets/backgrounds/Trees/32.png" },
+					{ alias: "Tree_2", src: "assets/backgrounds/Trees/34.png" },
+					{ alias: "heart", src: "assets/backgrounds/heart/heart.png" },
+				].concat(Hills_array)
+			);
 
-        if(isViewPort){
-            viewport.addChild(home_container);
-            app.stage.addChild(viewport)
-            viewport.drag()
-            //viewport.pinch()
-            viewport.wheel()
-            //viewport.decelerate(); 
-            //viewport.moveCenter(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)
-            viewport.clamp({direction: "all", left:0, right: WORLD_WIDTH, top:0, bottom: WORLD_HEIGHT});
-            viewport.clampZoom({minScale:1,maxScale:1});
+			const resources = await PIXI.Assets.loadBundle("resources", () => {
+				console.log("assets loaded");
+			});
 
-            //initial view set
-            viewport.moveCorner(0,0);
-        }else{
-            app.stage.addChild(home_container);
-            //app.stage.scale.set(0.4,0.4)
-        }
+			var home_container = new PIXI.Container();
+			home_container.label = "Home Container";
 
-        app.stage.addChild( await add_frame());
+			home_container.addChild(await add_Water_bg());
+			home_container.addChild(await add_ground());
+			home_container.addChild(await add_player());
 
-        // adds the ocean background
-        async function add_Water_bg(){
-            var bg_water = new PIXI.Container();
-            bg_water.label = "Water";
+			if (isViewPort) {
+				viewport.addChild(home_container);
+				app.stage.addChild(viewport);
+				viewport.drag();
+				//viewport.pinch()
+				viewport.wheel();
+				//viewport.decelerate();
+				//viewport.moveCenter(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)
+				viewport.clamp({
+					direction: "all",
+					left: 0,
+					right: WORLD_WIDTH,
+					top: 0,
+					bottom: WORLD_HEIGHT,
+				});
+				viewport.clampZoom({ minScale: 1, maxScale: 1 });
 
-            let graphics = new PIXI.Graphics();
-            graphics.beginFill(0xc0d470);
-            graphics.drawRect(300, 300, WORLD_WIDTH, WORLD_HEIGHT);
-            bg_water.addChild(graphics);
- 
-            for (let i = 0; i < 30; i++) {
-                for (let j = 0; j < 23; j++) {
-                    if( i>6 && i<20 && j>6 && j<18) continue;
-                    let anim = new PIXI.AnimatedSprite(resources.Water_Anim_json.animations.Water);
-                    anim.position.set(i*80,j*80);
-                    anim.animationSpeed = 1/10;   
-                    anim.loop = true;
-                    anim.play();
-                    bg_water.addChild(anim);
-                }            
-            }
+				//initial view set
+				viewport.moveCorner(0, 0);
+			} else {
+				app.stage.addChild(home_container);
+				//app.stage.scale.set(0.4,0.4)
+			}
 
-            return bg_water;
-        }
+			app.stage.addChild(await add_frame());
 
-        async function add_ground(){
-            var bg_land = new PIXI.Container();
-            bg_land.label = "Land";
+			// adds the ocean background
+			async function add_Water_bg() {
+				var bg_water = new PIXI.Container();
+				bg_water.label = "Water";
 
-            bg_land.addChild(addSprite(resources['Land_Layer'], 0,0,0.5,0.5))
+				let graphics = new PIXI.Graphics();
+				graphics.beginFill(0xc0d470);
+				graphics.drawRect(300, 300, WORLD_WIDTH, WORLD_HEIGHT);
+				bg_water.addChild(graphics);
 
-            // bg_land.addChild(addSprite(resources["Rock7_water_shadow1"], 250,100,1,1));
-            // bg_land.addChild(addSprite(resources["Rock7_water_shadow3"], 220,200,1,1));
-            // bg_land.addChild(addSprite(resources["Rock7_water_shadow4"], 275,186,1,1));
-            // bg_land.addChild(addSprite(resources["Rock7_water_shadow4"], 240,160,1,1));
-            // bg_land.addChild(addSprite(resources["Tree_1"], 350,300,0.4,0.4));
-            // bg_land.addChild(addSprite(resources["Tree_1"], 450,300,0.4,0.4));
-            // bg_land.addChild(addSprite(resources["Tree_1"], 550,300,0.4,0.4));
-            // bg_land.addChild(addSprite(resources["Tree_1"], 400,400,0.4,0.4));
-            // bg_land.addChild(addSprite(resources["Tree_1"], 500,400,0.4,0.4));
-            // bg_land.addChild(addSprite(resources["Tree_2"], 350,400,0.4,0.4));
-            // bg_land.addChild(addSprite(resources["Tree_2"], 300,450,0.4,0.4));
-            // bg_land.addChild(addSprite(resources["Tree_2"], 370,450,0.4,0.4));
-            // bg_land.addChild(addSprite(resources["Tree_2"], 350,500,0.4,0.4));
+				for (let i = 0; i < 30; i++) {
+					for (let j = 0; j < 23; j++) {
+						if (i > 6 && i < 20 && j > 6 && j < 18) continue;
+						let anim = new PIXI.AnimatedSprite(
+							resources.Water_Anim_json.animations.Water
+						);
+						anim.position.set(i * 80, j * 80);
+						anim.animationSpeed = 1 / 10;
+						anim.loop = true;
+						anim.play();
+						bg_water.addChild(anim);
+					}
+				}
 
-            //bg_land.addChild(addSprite(resources['Grass_Layer'], 0,0,1.5,1.5));
-            bg_land.addChild(addSprite(resources['Village_Layer'], 0,0,1.5,1.5));
+				return bg_water;
+			}
 
-            //temp blocks
-            var box1 = new PIXI.Graphics();
-            //box1.beginFill(0xFFFF00);            
-            box1.lineStyle(5, 0xFF0000);// set the line style to have a width of 5 and set the color to red
-            box1.drawRect(turning_rects['NW']['x'], turning_rects['NW']['y'], turning_rects['NW']['w'], turning_rects['NW']['h']); // draw a rectangle
-            bg_land.addChild(box1);
-            
-            var box2 = new PIXI.Graphics();
-            //box2.beginFill(0xFFFF00);            
-            box2.lineStyle(5, 0x000000);// set the line style to have a width of 5 and set the color to red
-            box2.drawRect(turning_rects['NE']['x'], turning_rects['NE']['y'], turning_rects['NE']['w'], turning_rects['NE']['h']); // draw a rectangle
-            bg_land.addChild(box2);
-            
-            var box3 = new PIXI.Graphics();
-            //box3.beginFill(0xFFFF00);            
-            box3.lineStyle(5, 0xFFFF00);// set the line style to have a width of 5 and set the color to red
-            box3.drawRect(turning_rects['SE']['x'], turning_rects['SE']['y'], turning_rects['SE']['w'], turning_rects['SE']['h']); // draw a rectangle
-            bg_land.addChild(box3);
-            
-            var box4 = new PIXI.Graphics();
-            //box4.beginFill(0xFFFF00);            
-            box4.lineStyle(5, 0xFF00FF);// set the line style to have a width of 5 and set the color to red
-            box4.drawRect(turning_rects['SW']['x'], turning_rects['SW']['y'], turning_rects['SW']['w'], turning_rects['SW']['h']); // draw a rectangle
-            bg_land.addChild(box4);            
+			async function add_ground() {
+				var bg_land = new PIXI.Container();
+				bg_land.label = "Land";
 
-            return bg_land;
-        }
+				bg_land.addChild(addSprite(resources["Land_Layer"], 0, 0, 0.5, 0.5));
 
-        async function add_player() {
-            var player_container = new PIXI.Container();
-            let anim = new PIXI.AnimatedSprite(resources.Player_Anim_json.animations.Player_Anim);
-            anim.scale.set(2.5);
-            anim.position.set(0,0);
-            anim.animationSpeed = 1/10;   
-            anim.loop = true;
-            anim.play();
-            player_container.addChild(anim);
-            player_container.position.set(550,250);
+				// bg_land.addChild(addSprite(resources["Rock7_water_shadow1"], 250,100,1,1));
+				// bg_land.addChild(addSprite(resources["Rock7_water_shadow3"], 220,200,1,1));
+				// bg_land.addChild(addSprite(resources["Rock7_water_shadow4"], 275,186,1,1));
+				// bg_land.addChild(addSprite(resources["Rock7_water_shadow4"], 240,160,1,1));
+				// bg_land.addChild(addSprite(resources["Tree_1"], 350,300,0.4,0.4));
+				// bg_land.addChild(addSprite(resources["Tree_1"], 450,300,0.4,0.4));
+				// bg_land.addChild(addSprite(resources["Tree_1"], 550,300,0.4,0.4));
+				// bg_land.addChild(addSprite(resources["Tree_1"], 400,400,0.4,0.4));
+				// bg_land.addChild(addSprite(resources["Tree_1"], 500,400,0.4,0.4));
+				// bg_land.addChild(addSprite(resources["Tree_2"], 350,400,0.4,0.4));
+				// bg_land.addChild(addSprite(resources["Tree_2"], 300,450,0.4,0.4));
+				// bg_land.addChild(addSprite(resources["Tree_2"], 370,450,0.4,0.4));
+				// bg_land.addChild(addSprite(resources["Tree_2"], 350,500,0.4,0.4));
 
-            document.addEventListener("wheel", (event) => {
-                if(event.deltaY != -100){                    
-                    move_forward(player_container);//scroll down
-                }else{
-                    move_backward(player_container);//scroll up
-                }
-            });
-            document.addEventListener("keydown", (event)=>{
-                if(event.key == 'ArrowRight'){
-                    move_forward(player_container);//scroll down
-                }else if(event.key == 'ArrowLeft'){
-                    move_backward(player_container);//scroll up
-                }
-                if(event.key == 'ArrowDown'){
-                    move_player(player_container,"down");
-                }else if(event.key == 'ArrowUp'){
-                    move_player(player_container,"up");
-                }
-                in_which_box(player_container);
-            });
+				//bg_land.addChild(addSprite(resources['Grass_Layer'], 0,0,1.5,1.5));
+				bg_land.addChild(addSprite(resources["Village_Layer"], 0, 0, 1.5, 1.5));
 
-            
+				//temp blocks
+				var box1 = new PIXI.Graphics();
+				//box1.beginFill(0xFFFF00);
+				box1.lineStyle(5, 0xff0000); // set the line style to have a width of 5 and set the color to red
+				box1.drawRect(
+					turning_rects["NW"]["x"],
+					turning_rects["NW"]["y"],
+					turning_rects["NW"]["w"],
+					turning_rects["NW"]["h"]
+				); // draw a rectangle
+				bg_land.addChild(box1);
 
+				var box2 = new PIXI.Graphics();
+				//box2.beginFill(0xFFFF00);
+				box2.lineStyle(5, 0x000000); // set the line style to have a width of 5 and set the color to red
+				box2.drawRect(
+					turning_rects["NE"]["x"],
+					turning_rects["NE"]["y"],
+					turning_rects["NE"]["w"],
+					turning_rects["NE"]["h"]
+				); // draw a rectangle
+				bg_land.addChild(box2);
 
-            return player_container;
-        }
+				var box3 = new PIXI.Graphics();
+				//box3.beginFill(0xFFFF00);
+				box3.lineStyle(5, 0xffff00); // set the line style to have a width of 5 and set the color to red
+				box3.drawRect(
+					turning_rects["SE"]["x"],
+					turning_rects["SE"]["y"],
+					turning_rects["SE"]["w"],
+					turning_rects["SE"]["h"]
+				); // draw a rectangle
+				bg_land.addChild(box3);
 
-        function move_forward(player_container){
-            //in_which_box(player_container);
-            move_player(player_container,"right");
-        }
-        function move_backward(player_container){
-            //in_which_box(player_container);
-            move_player(player_container,"left");
-        }
+				var box4 = new PIXI.Graphics();
+				//box4.beginFill(0xFFFF00);
+				box4.lineStyle(5, 0xff00ff); // set the line style to have a width of 5 and set the color to red
+				box4.drawRect(
+					turning_rects["SW"]["x"],
+					turning_rects["SW"]["y"],
+					turning_rects["SW"]["w"],
+					turning_rects["SW"]["h"]
+				); // draw a rectangle
+				bg_land.addChild(box4);
 
-        function move_player(player_container, direction = 'left'){
-            if(direction == 'left'){
-                let x = player_container.x;
-                let y = player_container.y;
-                player_container.position.set(x-10,y);
-                if((x)<(viewport.hitArea.x)){
-                    viewport.moveCorner(viewport.hitArea.x-10,viewport.hitArea.y);
-                }
-            }
-            if(direction == 'right'){
-                let x = player_container.x;
-                let y = player_container.y;
-                player_container.position.set(x+10,y);
-                if(x>( (WORLD_WIDTH-viewport.hitArea.width)-(x+600) )){
-                    viewport.moveCorner(viewport.hitArea.x+10,viewport.hitArea.y);
-                }
-            }
-            if(direction == 'down'){
-                let x = player_container.x;
-                let y = player_container.y;
-                player_container.position.set(x,y+10);
-                //if(y>( (WORLD_HEIGHT-viewport.hitArea.height)-(y) )){
-                    viewport.moveCorner(viewport.hitArea.x,viewport.hitArea.y+10);
-                //}
-            }
-            if(direction == 'up'){
-                let x = player_container.x;
-                let y = player_container.y;
-                player_container.position.set(x,y-10);
-                //if((y)<(viewport.hitArea.y)){
-                    viewport.moveCorner(viewport.hitArea.x,viewport.hitArea.y-10);
-                //}
-            }
-        }
+				return bg_land;
+			}
 
-        function in_which_box(player_container){
-            let x = player_container.x;
-            let y = player_container.y;
-            console.log(x,y,turning_rects['NE']['x'],turning_rects['NE']['y']);
-            if( 
-                x > turning_rects['NE']['x'] && 
-                y > turning_rects['NE']['y'] && 
-                x < turning_rects['NE']['x']+turning_rects['NE']['w'] &&
-                y < turning_rects['NE']['y']+turning_rects['NE']['h']
-            ){
-                console.log("NE");
-            }
-            if( 
-                x > turning_rects['SE']['x'] && 
-                y > turning_rects['SE']['y'] && 
-                x < turning_rects['SE']['x']+turning_rects['SE']['w'] &&
-                y < turning_rects['SE']['y']+turning_rects['SE']['h']
-            ){
-                console.log("SE");
-            }
-            if( 
-                x > turning_rects['SW']['x'] && 
-                y > turning_rects['SW']['y'] && 
-                x < turning_rects['SW']['x']+turning_rects['SW']['w'] &&
-                y < turning_rects['SW']['y']+turning_rects['SW']['h']
-            ){
-                console.log("SW");
-            }
-            if( 
-                x > turning_rects['NW']['x'] && 
-                y > turning_rects['NW']['y'] && 
-                x < turning_rects['NW']['x']+turning_rects['NW']['w'] &&
-                y < turning_rects['NW']['y']+turning_rects['NW']['h']
-            ){
-                console.log("NW");
-            }
-        }
+			async function add_player() {
+				var player_container = new PIXI.Container();
+				let anim = new PIXI.AnimatedSprite(
+					resources.Player_Anim_json.animations.Player_Anim
+				);
+				anim.scale.set(2.5);
+				anim.position.set(0, 0);
+				anim.animationSpeed = 1 / 10;
+				anim.loop = true;
+				anim.play();
+				player_container.addChild(anim);
+				player_container.position.set(550, 250);
 
-        async function add_frame(){
-            var frame_container = new PIXI.Container();
-            frame_container.label = "Frame";
+				document.addEventListener("wheel", (event) => {
+					if (event.deltaY != -100) {
+						move_forward(player_container); //scroll down
+					} else {
+						move_backward(player_container); //scroll up
+					}
+				});
+				document.addEventListener("keydown", (event) => {
+					if (event.key == "ArrowRight") {
+						move_forward(player_container); //scroll down
+					} else if (event.key == "ArrowLeft") {
+						move_backward(player_container); //scroll up
+					}
+					if (event.key == "ArrowDown") {
+						move_player(player_container, "down");
+					} else if (event.key == "ArrowUp") {
+						move_player(player_container, "up");
+					}
+					in_which_box(player_container);
+				});
 
-            frame_container.addChild(addSprite(resources['heart'], 10,10,2,2));
-            frame_container.addChild(addSprite(resources['heart'], 60,10,2,2));
-            frame_container.addChild(addSprite(resources['heart'], 110,10,2,2));
+				return player_container;
+			}
 
-            return frame_container;
-        }
-        
-        function addSprite(resource, x,y,sx,sy){
-            let sp = new PIXI.Sprite(resource);
-            sp.position.set(x,y);
-            sp.scale.set(sx,sy);
-            return sp;
-        }
+			function move_forward(player_container) {
+				//in_which_box(player_container);
+				move_player(player_container, "right");
+			}
+			function move_backward(player_container) {
+				//in_which_box(player_container);
+				move_player(player_container, "left");
+			}
 
-        
-      </script>
-  </body>
+			function move_player(player_container, direction = "left") {
+				const BOUNDS = {
+					minX: 230,
+					maxX: 2070,
+					minY: 230,
+					maxY: 1240,
+				};
+				const VIEWPORT_MARGIN = 300; // Margin from viewport edges
+
+				let x = player_container.x;
+				let y = player_container.y;
+
+				if (direction == "left") {
+					x = Math.max(BOUNDS.minX, x - 10);
+					player_container.position.set(x, y);
+					if (x < viewport.hitArea.x + VIEWPORT_MARGIN) {
+						viewport.moveCorner(viewport.hitArea.x - 10, viewport.hitArea.y);
+					}
+				}
+				if (direction == "right") {
+					x = Math.min(BOUNDS.maxX, x + 10);
+					player_container.position.set(x, y);
+					if (
+						x >
+						viewport.hitArea.x + viewport.hitArea.width - VIEWPORT_MARGIN
+					) {
+						viewport.moveCorner(viewport.hitArea.x + 10, viewport.hitArea.y);
+					}
+				}
+				if (direction == "down") {
+					y = Math.min(BOUNDS.maxY, y + 10);
+					player_container.position.set(x, y);
+					if (
+						y >
+						viewport.hitArea.y + viewport.hitArea.height - VIEWPORT_MARGIN
+					) {
+						viewport.moveCorner(viewport.hitArea.x, viewport.hitArea.y + 10);
+					}
+				}
+				if (direction == "up") {
+					y = Math.max(BOUNDS.minY, y - 10);
+					player_container.position.set(x, y);
+					if (y < viewport.hitArea.y + VIEWPORT_MARGIN) {
+						viewport.moveCorner(viewport.hitArea.x, viewport.hitArea.y - 10);
+					}
+				}
+			}
+
+			function in_which_box(player_container) {
+				let x = player_container.x;
+				let y = player_container.y;
+				console.log(x, y, turning_rects["NE"]["x"], turning_rects["NE"]["y"]);
+				if (
+					x > turning_rects["NE"]["x"] &&
+					y > turning_rects["NE"]["y"] &&
+					x < turning_rects["NE"]["x"] + turning_rects["NE"]["w"] &&
+					y < turning_rects["NE"]["y"] + turning_rects["NE"]["h"]
+				) {
+					console.log("NE");
+				}
+				if (
+					x > turning_rects["SE"]["x"] &&
+					y > turning_rects["SE"]["y"] &&
+					x < turning_rects["SE"]["x"] + turning_rects["SE"]["w"] &&
+					y < turning_rects["SE"]["y"] + turning_rects["SE"]["h"]
+				) {
+					console.log("SE");
+				}
+				if (
+					x > turning_rects["SW"]["x"] &&
+					y > turning_rects["SW"]["y"] &&
+					x < turning_rects["SW"]["x"] + turning_rects["SW"]["w"] &&
+					y < turning_rects["SW"]["y"] + turning_rects["SW"]["h"]
+				) {
+					console.log("SW");
+				}
+				if (
+					x > turning_rects["NW"]["x"] &&
+					y > turning_rects["NW"]["y"] &&
+					x < turning_rects["NW"]["x"] + turning_rects["NW"]["w"] &&
+					y < turning_rects["NW"]["y"] + turning_rects["NW"]["h"]
+				) {
+					console.log("NW");
+				}
+			}
+
+			async function add_frame() {
+				var frame_container = new PIXI.Container();
+				frame_container.label = "Frame";
+
+				frame_container.addChild(addSprite(resources["heart"], 10, 10, 2, 2));
+				frame_container.addChild(addSprite(resources["heart"], 60, 10, 2, 2));
+				frame_container.addChild(addSprite(resources["heart"], 110, 10, 2, 2));
+
+				return frame_container;
+			}
+
+			function addSprite(resource, x, y, sx, sy) {
+				let sp = new PIXI.Sprite(resource);
+				sp.position.set(x, y);
+				sp.scale.set(sx, sy);
+				return sp;
+			}
+
+			const centerArea = {
+				x: (BOUNDS.maxX + BOUNDS.minX) / 2 - 300,
+				y: (BOUNDS.maxY + BOUNDS.minY) / 2 - 200,
+				width: 600,
+				height: 400,
+			};
+
+			const restrictedArea = new PIXI.Graphics();
+			restrictedArea.lineStyle(5, 0x000000);
+			restrictedArea.drawRect(
+				centerArea.x,
+				centerArea.y,
+				centerArea.width,
+				centerArea.height
+			);
+			app.stage.addChild(restrictedArea);
+		</script>
+	</body>
 </html>
