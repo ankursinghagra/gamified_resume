@@ -6,16 +6,32 @@ let currentZone = null;
 export async function add_player(resources, viewport) {
     // ... (existing helper closure, no changes to init logic needed)
     var player_container = new PIXI.Container();
-    let anim = new PIXI.AnimatedSprite(
-        resources.Player_Anim_json.animations.Player_Anim
-    );
+
+    // Pick direction frames by index (interleaved layout):
+    // Down: 0,4,8,12 | Up: 1,5,9,13 | Left: 2,6,10,14 | Right: 3,7,11,15
+    const allTextures = resources.Player_Anim_json.animations.Player_Anim;
+    const dirTextures = {
+        down:  [0, 4,  8, 12].map(i => allTextures[i]),
+        up:    [1, 5,  9, 13].map(i => allTextures[i]),
+        left:  [2, 6, 10, 14].map(i => allTextures[i]),
+        right: [3, 7, 11, 15].map(i => allTextures[i]),
+    };
+
+    let anim = new PIXI.AnimatedSprite(dirTextures.down);
     anim.scale.set(2.5);
     anim.position.set(0, 0);
     anim.animationSpeed = 1 / 10;
     anim.loop = true;
-    anim.play();
+    anim.stop();          // start idle — will play when moving
+    anim.currentFrame = 0;
     player_container.addChild(anim);
     player_container.position.set(550, 250);
+
+    // Attach animation state so move_player can access it
+    player_container._anim = anim;
+    player_container._dirTextures = dirTextures;
+    player_container._animDir = 'down';
+    player_container._idleTimer = null;
 
     // Initial check
     check_zone(player_container);
@@ -67,6 +83,25 @@ function move_backward(player_container, viewport) {
     move_player(player_container, viewport, "left");
 }
 
+function updateAnim(player_container, dir) {
+    const anim = player_container._anim;
+    const dirTextures = player_container._dirTextures;
+    if (!anim || !dirTextures) return;
+
+    if (player_container._animDir !== dir) {
+        player_container._animDir = dir;
+        anim.textures = dirTextures[dir];
+        anim.currentFrame = 0;
+    }
+    if (!anim.playing) anim.play();
+
+    clearTimeout(player_container._idleTimer);
+    player_container._idleTimer = setTimeout(() => {
+        anim.stop();
+        anim.currentFrame = 0; // rest at idle pose
+    }, 150);
+}
+
 function checkCollision(x, y) {
     // Player buffer (size) approx 30x30
     const w = 30;
@@ -115,7 +150,8 @@ function move_player(player_container, viewport, direction = "left") {
 
     if (!checkCollision(nextX, nextY)) {
         player_container.position.set(nextX, nextY);
-        
+        updateAnim(player_container, direction);
+
         // Update Viewport
         if (direction == "left" && nextX < viewport.hitArea.x + VIEWPORT_MARGIN) {
             viewport.moveCorner(viewport.hitArea.x - SPEED, viewport.hitArea.y);

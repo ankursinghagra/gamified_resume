@@ -59,6 +59,27 @@
                 z-index: 30;
             }
 
+            #zone-hint {
+                position: absolute;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.75);
+                color: #ffee00;
+                font-size: 9px;
+                padding: 6px 12px;
+                border: 1px solid #ffee00;
+                animation: hintFade 5s forwards;
+                pointer-events: none;
+                white-space: nowrap;
+            }
+
+            @keyframes hintFade {
+                0%   { opacity: 1; }
+                70%  { opacity: 1; }
+                100% { opacity: 0; }
+            }
+
 			#modal-overlay {
 				display: none;
 				position: fixed;
@@ -95,6 +116,8 @@
             <div id="audio-controls">
                 <button id="mute-btn" class="nes-btn is-error">🔇</button>
             </div>
+
+            <div id="zone-hint">[H] Toggle Walkable Zones &nbsp;|&nbsp; 🟩 Walkable &nbsp; 🟥 Blocked &nbsp; 🟨 Interaction</div>
 
 			<div id="notification" class="nes-container is-dark with-title">
 				<p class="title">Action</p>

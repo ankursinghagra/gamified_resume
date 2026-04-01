@@ -1,4 +1,4 @@
-import { WORLD_WIDTH, WORLD_HEIGHT, turning_rects } from './app_config.js';
+import { WORLD_WIDTH, WORLD_HEIGHT, turning_rects, COLLIDERS } from './app_config.js';
 import { addSprite } from './utils.js';
 
 export async function add_Water_bg(resources) {
@@ -37,6 +37,23 @@ export async function add_ground(resources) {
     // Debug boxes removed for production polish
     // If needed for debugging, look at turning_rects in app_config.js
 
+    // --- Visual Hotspots ---
+    // NE: About Me (NPC)
+    const npc = addSprite(resources["npc_guide"], turning_rects.NE.x, turning_rects.NE.y, 0.4, 0.4);
+    bg_land.addChild(npc);
+
+    // NW: Skills (Signpost)
+    const sign = addSprite(resources["signpost"], turning_rects.NW.x, turning_rects.NW.y, 0.4, 0.4);
+    bg_land.addChild(sign);
+
+    // SE: Contact (Mailbox)
+    const mailbox = addSprite(resources["mailbox"], turning_rects.SE.x, turning_rects.SE.y, 0.4, 0.4);
+    bg_land.addChild(mailbox);
+
+    // SW: Projects (Workbench)
+    const workbench = addSprite(resources["workbench"], turning_rects.SW.x, turning_rects.SW.y, 0.4, 0.4);
+    bg_land.addChild(workbench);
+
     return bg_land;
 }
 
@@ -49,4 +66,52 @@ export async function add_frame(resources) {
     frame_container.addChild(addSprite(resources["heart"], 110, 10, 2, 2));
 
     return frame_container;
+}
+
+export function create_debug_overlay() {
+    const overlay = new PIXI.Container();
+    overlay.label = "DebugOverlay";
+
+    const g = new PIXI.Graphics();
+
+    // Walkable land area — light green
+    g.beginFill(0x44ff44, 0.18);
+    g.drawRect(230, 230, 2070 - 230, 1240 - 230);
+    g.endFill();
+
+    // Colliders (blocked zones) — red
+    for (const c of COLLIDERS) {
+        g.lineStyle(1, 0xff2222, 0.9);
+        g.beginFill(0xff2222, 0.45);
+        g.drawRect(c.x, c.y, c.w, c.h);
+        g.endFill();
+    }
+    g.lineStyle(0);
+
+    // Interaction zones (turning_rects) — yellow outline + fill
+    for (const [, rect] of Object.entries(turning_rects)) {
+        g.lineStyle(2, 0xffee00, 1);
+        g.beginFill(0xffee00, 0.35);
+        g.drawRect(rect.x, rect.y, rect.w, rect.h);
+        g.endFill();
+    }
+    g.lineStyle(0);
+
+    overlay.addChild(g);
+
+    // Zone labels — drawn on top of graphics
+    for (const [key, rect] of Object.entries(turning_rects)) {
+        const label = new PIXI.Text(key, {
+            fontFamily: 'Press Start 2P',
+            fontSize: 16,
+            fill: 0xffffff,
+            stroke: 0x000000,
+            strokeThickness: 4,
+        });
+        label.anchor.set(0.5);
+        label.position.set(rect.x + rect.w / 2, rect.y + rect.h / 2);
+        overlay.addChild(label);
+    }
+
+    return overlay;
 }

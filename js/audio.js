@@ -6,12 +6,12 @@ export function initAudio() {
     // Background Music
     // Using a placeholder online URL or local path if available
     // For now, we'll try to use a local path, but if it fails, we handle it gracefully.
-    bgm = new Audio('assets/audio/bgm.mp3'); 
+    bgm = new Audio('assets/audio/bgm.wav'); 
     bgm.loop = true;
     bgm.volume = 0.3;
 
     // SFX
-    sfx.interact = new Audio('assets/audio/interact.mp3');
+    sfx.interact = new Audio('assets/audio/interact.wav');
     sfx.interact.volume = 0.5;
 
     // Try to play BGM (might be blocked by browser policy initially)
