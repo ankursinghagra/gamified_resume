@@ -5,6 +5,17 @@ import { add_player } from './player.js';
 import { setupUI } from './ui.js';
 import { initAudio } from './audio.js';
 
+// Wait for the Start button before loading anything
+await new Promise(resolve => {
+    document.getElementById('intro-start-btn').addEventListener('click', () => {
+        const intro = document.getElementById('intro-screen');
+        intro.style.transition = 'opacity 0.4s';
+        intro.style.opacity = '0';
+        setTimeout(() => intro.remove(), 420);
+        resolve();
+    }, { once: true });
+});
+
 // Initialize PIXI App
 const app = new PIXI.Application({
     height: window.innerHeight,

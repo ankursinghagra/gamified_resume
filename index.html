@@ -108,9 +108,106 @@
 				top: 10px;
 				right: 10px;
 			}
+
+			/* Intro / Splash Screen */
+			#intro-screen {
+				position: fixed;
+				inset: 0;
+				z-index: 100;
+				background: #0a0a0a;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				gap: 32px;
+				padding: 24px;
+			}
+			#intro-screen h1 {
+				font-size: clamp(14px, 3vw, 28px);
+				color: #ffee00;
+				text-align: center;
+				text-shadow: 3px 3px 0 #7b6000;
+				letter-spacing: 2px;
+			}
+			#intro-screen .subtitle {
+				font-size: clamp(7px, 1.2vw, 11px);
+				color: #aaa;
+				text-align: center;
+			}
+			#intro-controls {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 16px 32px;
+				max-width: 520px;
+				width: 100%;
+			}
+			.ctrl-row {
+				display: flex;
+				align-items: center;
+				gap: 14px;
+			}
+			.ctrl-key {
+				background: #222;
+				border: 2px solid #555;
+				border-bottom: 4px solid #333;
+				color: #fff;
+				font-family: 'Press Start 2P', cursive;
+				font-size: 9px;
+				padding: 5px 9px;
+				border-radius: 4px;
+				white-space: nowrap;
+				min-width: 36px;
+				text-align: center;
+				flex-shrink: 0;
+			}
+			.ctrl-desc {
+				color: #ccc;
+				font-size: 8px;
+				line-height: 1.6;
+			}
+			#intro-start-btn {
+				font-size: clamp(10px, 1.5vw, 14px);
+				padding: 12px 36px;
+				pointer-events: auto;
+				animation: pulseBorder 1.2s infinite;
+			}
+			@keyframes pulseBorder {
+				0%, 100% { box-shadow: 0 0 0 0 rgba(92,214,92,0.6); }
+				50%       { box-shadow: 0 0 0 8px rgba(92,214,92,0); }
+			}
 		</style>
 	</head>
 	<body>
+		<!-- Intro / Splash Screen -->
+		<div id="intro-screen">
+			<h1>&#x1F5FA; Ankur's World</h1>
+			<p class="subtitle">A Gamified Resume Experience</p>
+
+			<div class="nes-container is-dark" style="max-width:540px;width:100%;padding:24px 28px;">
+				<p class="title" style="color:#ffee00;font-size:10px;margin-bottom:16px;">Controls</p>
+				<div id="intro-controls">
+					<div class="ctrl-row">
+						<span class="ctrl-key">&#x2190; &#x2192;</span>
+						<span class="ctrl-desc">Move left / right</span>
+					</div>
+					<div class="ctrl-row">
+						<span class="ctrl-key">&#x2191; &#x2193;</span>
+						<span class="ctrl-desc">Move up / down</span>
+					</div>
+					<div class="ctrl-row">
+						<span class="ctrl-key">E</span>
+						<span class="ctrl-desc">Interact with<br>notice board</span>
+					</div>
+					<div class="ctrl-row">
+						<span class="ctrl-key">H</span>
+						<span class="ctrl-desc">Toggle walkable<br>zone highlight</span>
+					</div>
+				</div>
+			</div>
+
+			<button id="intro-start-btn" class="nes-btn is-success">&#x25BA; START</button>
+		</div>
+
 		<!-- UI Elements -->
 		<div id="ui-layer">
             <div id="audio-controls">

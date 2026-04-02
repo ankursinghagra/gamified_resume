@@ -41,15 +41,6 @@ export async function add_player(resources, viewport) {
     // Initial check
     check_zone(player_container);
 
-    document.addEventListener("wheel", (event) => {
-        if (getIsModalOpen()) return;
-        if (event.deltaY != -100) {
-            move_forward(player_container, viewport); //scroll down
-        } else {
-            move_backward(player_container, viewport); //scroll up
-        }
-    });
-
     document.addEventListener("keydown", (event) => {
         if (getIsModalOpen()) {
             if (event.key === "Escape") {
