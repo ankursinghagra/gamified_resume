@@ -67,6 +67,8 @@ home_container.addChild(await add_player(resources, viewport));
 // Walkable zone highlight overlay (auto-hides after 5s, toggle with H)
 const debugOverlay = create_debug_overlay();
 home_container.addChild(debugOverlay);
+home_container.cacheAsTexture = false;
+home_container.cacheAsBitmap  = false;
 
 let overlayAutoHide = true;
 let overlayFrames = 5 * 60; // 5 seconds at 60fps
@@ -87,6 +89,36 @@ document.addEventListener('keydown', (e) => {
         overlayAutoHide = false;
         debugOverlay.alpha = 1;
         debugOverlay.visible = !debugOverlay.visible;
+    }
+});
+
+// Clouds — top layer inside world, fly left to right at random heights
+const cloudDefs = [
+    { x: 300,  y: 270, speed: 0.5, scale: 2.2 },
+    { x: 1100, y: 340, speed: 0.8, scale: 1.6 },
+    { x: 1800, y: 200, speed: 0.35, scale: 2.8 },
+    { x: 1300,  y: 470, speed: 0.65, scale: 2.2 },
+    { x: 600, y: 640, speed: 0.7, scale: 1.6 },
+    { x: 100, y: 400, speed: 0.45, scale: 2.8 },
+];
+const cloudSprites = cloudDefs.map(d => {
+    const spr = new PIXI.Sprite(resources['cloud']);
+    spr.anchor.set(0.5);
+    spr.scale.set(d.scale);
+    spr.alpha = 0.72;
+    spr.x = d.x;
+    spr.y = d.y;
+    spr._speed = d.speed;
+    home_container.addChild(spr);
+    return spr;
+});
+app.ticker.add((delta) => {
+    for (const c of cloudSprites) {
+        c.x += c._speed * delta;
+        if (c.x - c.width / 2 > WORLD_WIDTH + 100) {
+            c.x = -c.width / 2 - 20;
+            c.y = 180 + Math.random() * 220;
+        }
     }
 });
 

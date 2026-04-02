@@ -37,6 +37,44 @@ export async function add_ground(resources) {
     // Debug boxes removed for production polish
     // If needed for debugging, look at turning_rects in app_config.js
 
+    // --- Notice Boards at each hotspot ---
+    const boards = [
+        { zone: 'NW', label: 'Skills'    },
+        { zone: 'NE', label: 'About Me'  },
+        { zone: 'SW', label: 'Projects'  },
+        { zone: 'SE', label: 'Contact'   },
+    ];
+
+    for (const { zone, label } of boards) {
+        const rect = turning_rects[zone];
+        const boardContainer = new PIXI.Container();
+
+        // Board sprite — centred on the hotspot rect
+        const board = new PIXI.Sprite(resources['notice_board']);
+        board.anchor.set(0.5);
+        const boardScale = Math.min(rect.w / board.texture.width, rect.h / board.texture.height) * 1.1;
+        board.scale.set(boardScale);
+        board.x = rect.x + rect.w / 2;
+        board.y = rect.y + rect.h / 2;
+        boardContainer.addChild(board);
+
+        // Text label on the board
+        const text = new PIXI.Text(label, {
+            fontFamily: 'Press Start 2P',
+            fontSize: 10,
+            fill: 0x3b1a00,
+            align: 'center',
+            wordWrap: true,
+            wordWrapWidth: board.texture.width * boardScale * 0.7,
+        });
+        text.anchor.set(0.5);
+        text.x = board.x;
+        text.y = board.y - 2;
+        boardContainer.addChild(text);
+
+        bg_land.addChild(boardContainer);
+    }
+
     // --- Visual Hotspots ---
     // NE: About Me (NPC)
     const npc = addSprite(resources["npc_guide"], turning_rects.NE.x, turning_rects.NE.y, 0.4, 0.4);

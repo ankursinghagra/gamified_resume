@@ -48,6 +48,8 @@ export const manifest = [
     },
     { alias: "Tree_1", src: "assets/backgrounds/Trees/32.png" },
     { alias: "Tree_2", src: "assets/backgrounds/Trees/34.png" },
-    { alias: "heart", src: "assets/backgrounds/heart/heart.png" }
-    
+    { alias: "heart", src: "assets/backgrounds/heart/heart.png" },
+    { alias: "cloud", src: "assets/backgrounds/Clouds.png" },
+    { alias: "notice_board", src: "assets/backgrounds/board.png" }
+
 ].concat(Hills_array);

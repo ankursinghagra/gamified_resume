@@ -1,5 +1,5 @@
 import { turning_rects, COLLIDERS } from './app_config.js';
-import { showNotification, hideNotification, showModal, getIsModalOpen } from './ui.js';
+import { showNotification, hideNotification, showModal, getIsModalOpen, setOnModalClose } from './ui.js';
 
 let currentZone = null;
 
@@ -32,6 +32,11 @@ export async function add_player(resources, viewport) {
     player_container._dirTextures = dirTextures;
     player_container._animDir = 'down';
     player_container._idleTimer = null;
+
+    // Re-show notification if player is still on a zone when modal closes
+    setOnModalClose(() => {
+        if (currentZone) showNotification();
+    });
 
     // Initial check
     check_zone(player_container);

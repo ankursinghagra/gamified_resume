@@ -2,6 +2,11 @@ import { ZONE_CONTENT } from './app_config.js';
 import { toggleMute, playSFX } from './audio.js';
 
 let isModalOpen = false;
+let _onModalClose = null;
+
+export function setOnModalClose(fn) {
+    _onModalClose = fn;
+}
 
 export function setupUI() {
     const closeBtn = document.getElementById('modal-close');
@@ -54,6 +59,7 @@ export function hideModal() {
     const overlay = document.getElementById('modal-overlay');
     overlay.style.display = 'none';
     isModalOpen = false;
+    if (_onModalClose) _onModalClose();
 }
 
 export function getIsModalOpen() {
