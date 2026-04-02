@@ -1,9 +1,15 @@
-import { WORLD_WIDTH, WORLD_HEIGHT } from './app_config.js';
+import { WORLD_WIDTH, WORLD_HEIGHT, DEV_MODE } from './app_config.js';
 import { manifest } from './assets.js';
 import { add_Water_bg, add_ground, add_frame, create_debug_overlay } from './world.js';
 import { add_player } from './player.js';
 import { setupUI } from './ui.js';
 import { initAudio } from './audio.js';
+
+// Hide H hint in intro and zone-hint bar when not in dev mode
+if (!DEV_MODE) {
+    const zoneHint = document.getElementById('zone-hint');
+    if (zoneHint) zoneHint.style.display = 'none';
+}
 
 // Wait for the Start button before loading anything
 await new Promise(resolve => {
@@ -75,33 +81,33 @@ home_container.addChild(await add_Water_bg(resources));
 home_container.addChild(await add_ground(resources));
 home_container.addChild(await add_player(resources, viewport));
 
-// Walkable zone highlight overlay (auto-hides after 5s, toggle with H)
-const debugOverlay = create_debug_overlay();
-home_container.addChild(debugOverlay);
-home_container.cacheAsTexture = false;
-home_container.cacheAsBitmap  = false;
+// Walkable zone highlight overlay — dev mode only
+if (DEV_MODE) {
+    const debugOverlay = create_debug_overlay();
+    home_container.addChild(debugOverlay);
 
-let overlayAutoHide = true;
-let overlayFrames = 5 * 60; // 5 seconds at 60fps
-app.ticker.add((delta) => {
-    if (!overlayAutoHide) return;
-    overlayFrames -= delta;
-    if (overlayFrames <= 60) {
-        debugOverlay.alpha = Math.max(0, overlayFrames / 60);
-    }
-    if (overlayFrames <= 0) {
-        debugOverlay.visible = false;
-        overlayAutoHide = false;
-    }
-});
+    let overlayAutoHide = true;
+    let overlayFrames = 5 * 60; // 5 seconds at 60fps
+    app.ticker.add((delta) => {
+        if (!overlayAutoHide) return;
+        overlayFrames -= delta;
+        if (overlayFrames <= 60) {
+            debugOverlay.alpha = Math.max(0, overlayFrames / 60);
+        }
+        if (overlayFrames <= 0) {
+            debugOverlay.visible = false;
+            overlayAutoHide = false;
+        }
+    });
 
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'h' || e.key === 'H') {
-        overlayAutoHide = false;
-        debugOverlay.alpha = 1;
-        debugOverlay.visible = !debugOverlay.visible;
-    }
-});
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'h' || e.key === 'H') {
+            overlayAutoHide = false;
+            debugOverlay.alpha = 1;
+            debugOverlay.visible = !debugOverlay.visible;
+        }
+    });
+}
 
 // Clouds — top layer inside world, fly left to right at random heights
 const cloudDefs = [

@@ -1,11 +1,13 @@
 export const WORLD_WIDTH = 2400;
 export const WORLD_HEIGHT = 1840;
 
+export const DEV_MODE = false;
+
 export const turning_rects = {
-    NW: { x: 230, y: 230, h: 150, w: 200 },
-    NE: { x: 1860, y: 230, h: 150, w: 200 },
-    SW: { x: 1900, y: 1110, h: 150, w: 200 },
-    SE: { x: 230, y: 1110, h: 150, w: 200 },
+    NW: { x: 600, y: 630, h: 150, w: 200 },
+    NE: { x: 1200, y: 350, h: 150, w: 200 },
+    SW: { x: 1500, y: 810, h: 150, w: 200 },
+    SE: { x: 1000, y: 1010, h: 150, w: 200 },
 };
 
 // Simple collision boxes for obstacles

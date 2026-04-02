@@ -61,8 +61,10 @@ export async function add_ground(resources) {
         // Text label on the board
         const text = new PIXI.Text(label, {
             fontFamily: 'Press Start 2P',
-            fontSize: 10,
-            fill: 0x3b1a00,
+            fontSize: 18,
+            fill: 0xffffff,
+            stroke: 0x000000,
+            strokeThickness: 3,
             align: 'center',
             wordWrap: true,
             wordWrapWidth: board.texture.width * boardScale * 0.7,
